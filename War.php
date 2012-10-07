@@ -91,7 +91,7 @@ class War
                 . " to win the pot: " . implode(',', $pot)
             ;
             //$this->hands[$roundWinner] = array_merge($this->hands[$roundWinner], $pot);
-            $this->hands[$roundWinner] += $pot;
+            $this->hands[$roundWinner] = $this->hands[$roundWinner] + $pot;
         } else {    // tie, draw again
             $this->draw( $pot );
         }
