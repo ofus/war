@@ -60,24 +60,25 @@ class War
         return "Player " . $this->winner;
     }
 
-    public function draw( &$pot = NULL )
+    public function draw( Array $pot = NULL )
     {
-        $this->turn++;
+        if( $this->isGameOver() ) {
+            return FALSE;
+        }
         if ( is_null($pot) ) {
             $pot = Array();
         }
+        $this->turn++;
         list( $card0, $card1 )= Array(
             array_pop( $this->hands[0] ),
             array_pop( $this->hands[1] ),
         );
 
-        if ($card0 != $card1) { // tie, move to next card
+        array_push( $pot, $card0, $card1 );
+        if ($card0 != $card1) {
             $roundWinner = ($card0 > $card1) ? 0 : 1;
             $this->hands[$roundWinner] = array_merge($this->hands[$roundWinner], $pot);
-            return;
-        }
-        array_push( $pot, $card0, $card1 );
-        if( !$this->isGameOver() ) {
+        } else {    // tie, draw again
             $this->draw( $pot );
         }
 
