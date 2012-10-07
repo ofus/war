@@ -10,7 +10,7 @@ class War
     protected $hands;
 
     /** @var String[] */
-    public $log;
+    protected $log;
 
     /** @var int */
     protected $turn;
@@ -19,7 +19,7 @@ class War
     protected $deck;
 
     /** @var mixed */
-    protected $winner = FALSE;
+    protected $winner;
 
     public function __construct()
     {
@@ -41,7 +41,8 @@ class War
             $this->winner = -1;
             $leader = 0;
         } else {
-            $this->winner = $leader = ( $playerScore[0] > $playerScore[1] ) ? 0 : 1;
+            $this->winner = ( $playerScore[0] > $playerScore[1] ) ? 0 : 1;
+            $leader = $this->winner;
         }
         return $leader;
     }
@@ -53,6 +54,23 @@ class War
     public function getTurn()
     {
         return $this->turn;
+    }
+
+    public function getLog( $turn = NULL )
+    {
+        if ( is_null( $turn ) ) {
+            return $this->log;
+        }
+        return $this->log[$turn];
+    }
+
+    public function log($msg)
+    {
+        if ( $this->log[$this->turn] != '' ) {
+            throw new Exception('should not be a log here yet');
+        }
+        $this->log[$this->turn] = $msg;
+        return $this;
     }
 
     public function getScore($player)
@@ -68,7 +86,8 @@ class War
         if ( !$this->isGameOver() ) {
             return FALSE;
         }
-        if ( $this->winner == -1 ) {
+        $this->getPlayerAtLead();
+        if ( $this->winner === -1 ) {
             return "tie";
         }
         return "Player " . $this->winner;
@@ -87,26 +106,23 @@ class War
             $pot = Array();
         }
         $this->turn++;
-        list( $card0, $card1 )= Array(
-            array_pop( $this->hands[0] ),
-            array_pop( $this->hands[1] ),
-        );
+        $card0 = array_pop( $this->hands[0] );
+        $card1 = array_pop( $this->hands[1] );
 
         array_push( $pot, $card0, $card1 );
         if ($card0 != $card1) {
             $roundWinner = ($card0 > $card1) ? 0 : 1;
             $potstr = $this->cardToString($pot);
-            $this->log[$this->getTurn()] = "Player $roundWinner plays "
+            $this->log[$this->turn] = "Player $roundWinner plays "
                 . $this->cardToString($card0)
                 . " against "
                 . $this->cardToString($card1)
                 . " to win the pot: " . $potstr
             ;
-            //$this->hands[$roundWinner] = $this->hands[$roundWinner] + $pot;
             $tmp = $this->hands[$roundWinner];
             $this->hands[$roundWinner] = array_merge( $tmp, $pot );
         } else {    // tie, draw again
-            $this->log[$this->getTurn()] = "Players tie with " . $this->cardToString($card0) . "s and draw again.";
+            $this->log[$this->turn] = "Players tie with " . $this->cardToString($card0) . "s and draw again.";
             $this->draw( $pot );
         }
         return;
@@ -118,12 +134,8 @@ class War
      */
     public function displayHand($player, $compact = FALSE)
     {
-        if ($compact) {
-            $values = Array(0 => "2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A");
-        } else {
-            $values = Array(0 => "deuce", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "jack", "queen", "king", "ace");
-        }
-        $str = implode("",
+        $values = self::getValues( $compact );
+        $str = implode(" ",
             array_map(
                 function ($cardValue) use ($values) {
                     return $values[$cardValue];
@@ -137,7 +149,7 @@ class War
 
     public function cardToString($value)
     {
-        $values = Array(0 => "2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A");
+        $values = self::getValues();
         if (is_array($value)) {
             $str = '';
             foreach($value as $v) {
@@ -146,6 +158,13 @@ class War
             return $str;
         }
         return $values[$value];
+    }
+
+    public static function getValues($compact = FALSE){
+        if ( $compact == TRUE ) {
+            return Array(0 => "2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A");
+        }
+        return Array(0 => "deuce", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "jack", "queen", "king", "ace");
     }
 
 }
