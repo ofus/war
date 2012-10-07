@@ -52,6 +52,11 @@ class War
         return $this->turn;
     }
 
+    public function getScore($player)
+    {
+        return count($this->hands[$player]);
+    }
+
     public function getWinner()
     {
         if ($this->winner == -1) {

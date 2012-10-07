@@ -41,8 +41,8 @@ $game = new War();
 while ( !$game->isGameOver() ) {
     $game->draw();
     echo "Turn #" . $game->getTurn() . PHP_EOL;
-    echo "\tPlayer 0 current cards:\t" . $game->displayHand(0, TRUE) . PHP_EOL;
-    echo "\tPlayer 1 current cards:\t" . $game->displayHand(1, TRUE) . PHP_EOL;
+    echo "\tPlayer 0 current cards (" . $game->getScore(0) . "):\t" . $game->displayHand(0, TRUE) . PHP_EOL;
+    echo "\tPlayer 1 current cards (" . $game->getScore(1) . "):\t" . $game->displayHand(1, TRUE) . PHP_EOL;
 }
 echo "Winner: " . $game->getWinner() . PHP_EOL;
 echo "Game over on turn #" . $game->getTurn() . PHP_EOL;
