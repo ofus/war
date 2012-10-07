@@ -87,7 +87,7 @@ class War
             $roundWinner = ($card0 > $card1) ? 0 : 1;
             $cardsSorted = Array($card0, $card1);
             sort($cardsSorted);
-            $this->log[] = "Player $roundWinner plays " . $cardsSorted[0] . " against " . $cardsSorted[1]
+            $this->log[$this->getTurn()] = "Player $roundWinner plays " . $cardsSorted[0] . " against " . $cardsSorted[1]
                 . " to win the pot: " . implode(',', $pot)
             ;
             $this->hands[$roundWinner] = array_merge($this->hands[$roundWinner], $pot);

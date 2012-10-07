@@ -42,6 +42,7 @@ while ( !$game->isGameOver() ) {
     echo "Turn #" . $game->getTurn() . PHP_EOL;
     echo "\tPlayer 0 current cards (" . $game->getScore(0) . "):\t" . $game->displayHand(0, TRUE) . PHP_EOL;
     echo "\tPlayer 1 current cards (" . $game->getScore(1) . "):\t" . $game->displayHand(1, TRUE) . PHP_EOL;
+    echo "Log: " . $game->log[$game->getTurn()] . "\n";
     $game->draw();
 }
 echo "Winner: " . $game->getWinner() . PHP_EOL;
