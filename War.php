@@ -47,7 +47,7 @@ class War
     }
     public function isGameOver()
     {
-        return ( empty($this->hands[0]) || empty($this->hands[1]) );
+        return ( empty( $this->hands[0] ) || empty( $this->hands[1] ) );
     }
 
     public function getTurn()
@@ -57,17 +57,27 @@ class War
 
     public function getScore($player)
     {
-        return count($this->hands[$player]);
+        return count( $this->hands[$player] );
     }
 
+    /**
+     * @return string or false if game not over
+     */
     public function getWinner()
     {
-        if ($this->winner == -1) {
+        if ( !$this->isGameOver() ) {
+            return FALSE;
+        }
+        if ( $this->winner == -1 ) {
             return "tie";
         }
         return "Player " . $this->winner;
     }
 
+    /**
+     * Draw another card for each player
+     * @param array $pot (used in recursion)
+     */
     public function draw( Array $pot = NULL )
     {
         if( $this->isGameOver() ) {
@@ -85,13 +95,16 @@ class War
         array_push( $pot, $card0, $card1 );
         if ($card0 != $card1) {
             $roundWinner = ($card0 > $card1) ? 0 : 1;
-            $cardsSorted = Array($card0, $card1);
-            sort($cardsSorted);
-            $this->log[$this->getTurn()] = "Player $roundWinner plays " . $cardsSorted[0] . " against " . $cardsSorted[1]
-                . " to win the pot: " . implode(',', $this->cardToString($pot))
+            $potstr = $this->cardToString($pot);
+            $this->log[$this->getTurn()] = "Player $roundWinner plays "
+                . $this->cardToString($card0)
+                . " against "
+                . $this->cardToString($card1)
+                . " to win the pot: " . $potstr
             ;
-            //$this->hands[$roundWinner] = array_merge($this->hands[$roundWinner], $pot);
-            $this->hands[$roundWinner] = $this->hands[$roundWinner] + $pot;
+            //$this->hands[$roundWinner] = $this->hands[$roundWinner] + $pot;
+            $tmp = $this->hands[$roundWinner];
+            $this->hands[$roundWinner] = array_merge( $tmp, $pot );
         } else {    // tie, draw again
             $this->draw( $pot );
         }
@@ -109,14 +122,12 @@ class War
         } else {
             $values = Array(0 => "deuce", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "jack", "queen", "king", "ace");
         }
-        $str = implode(" ",
-            array_reverse(
-                array_map(
-                    function ($cardValue) use ($values) {
-                        return $values[$cardValue];
-                    },
-                    $this->hands[$player]
-                )
+        $str = implode("",
+            array_map(
+                function ($cardValue) use ($values) {
+                    return $values[$cardValue];
+                },
+                $this->hands[$player]
             )
         );
 
@@ -125,13 +136,14 @@ class War
 
     public function cardToString($value)
     {
-        $str = '';
-        if (is_array($value)) {
-            foreach($value as $v) {
-                $str .= cardToStr($v);
-            }
-        }
         $values = Array(0 => "2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A");
+        if (is_array($value)) {
+            $str = '';
+            foreach($value as $v) {
+                $str .= $values[$v];
+            }
+            return $str;
+        }
         return $values[$value];
     }
 
