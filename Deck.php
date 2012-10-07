@@ -21,7 +21,7 @@ class Deck
 
     /**
      * Shuffle the deck
-     * @return array
+     * @return Deck
      */
     public function shuffle()
     {
