@@ -88,7 +88,7 @@ class War
             $cardsSorted = Array($card0, $card1);
             sort($cardsSorted);
             $this->log[$this->getTurn()] = "Player $roundWinner plays " . $cardsSorted[0] . " against " . $cardsSorted[1]
-                . " to win the pot: " . implode(',', $pot)
+                . " to win the pot: " . implode(',', $this->cardToString($pot))
             ;
             //$this->hands[$roundWinner] = array_merge($this->hands[$roundWinner], $pot);
             $this->hands[$roundWinner] = $this->hands[$roundWinner] + $pot;
@@ -121,6 +121,18 @@ class War
         );
 
         return $str;
+    }
+
+    public function cardToString($value)
+    {
+        $str = '';
+        if (is_array($value)) {
+            foreach($value as $v) {
+                $str .= cardToStr($v);
+            }
+        }
+        $values = Array(0 => "2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A");
+        return $values[$value];
     }
 
 }
