@@ -44,25 +44,27 @@ class War
         return ( empty($this->hands[0]) || empty($this->hands[1]) );
     }
 
-    public function executeTurn()
+    public function draw( &$pot = NULL )
     {
-        for ( $pot = Array(); ; ) {
-            list( $card0, $card1 )= Array(
-                array_pop( $this->hands[0] ),
-                array_pop( $this->hands[1] ),
-            );
-            array_push( $pot, $card0, $card1 );
-            if ($card0 == $card1) { // tie, move to next card
-                if( $this->isGameOver() ) {
-                    return;
-                }
-                continue;
-            }
+        if ( is_null($pot) ) {
+            $pot = Array();
+        }
+        list( $card0, $card1 )= Array(
+            array_pop( $this->hands[0] ),
+            array_pop( $this->hands[1] ),
+        );
 
+        if ($card0 != $card1) { // tie, move to next card
             $roundWinner = ($card0 > $card1) ? 0 : 1;
             $this->hands[$roundWinner] = array_merge($this->hands[$roundWinner], $pot);
+            return;
+        }
+        array_push( $pot, $card0, $card1 );
+        if( !$this->isGameOver() ) {
+            $this->draw( $pot );
         }
 
+        /*
         // which hand is bigger
         //$biggerHand = ( count($this->hands[0]) >= count($this->hands[1]) ) ? $this->hands[0] : $this->hands[1];
         $biggerHand = 0;
@@ -71,13 +73,13 @@ class War
             $biggerHand = 1;
             $smallerHand = 0;
         }
-
         // check if all remaining cards in smaller hand will tie with larger hand, if true larger hand holder wins
         $largerHandCardsInPlay = array_slice( $this->hands[$biggerHand], count($this->hands[$smallerHand]) );
         if ( $largerHandCardsInPlay == $this->hands[$smallerHand] ) {
             $this->hands[$biggerHand] = array_merge( $this->hands[$biggerHand], $this->hands[$smallerHand] );
             $this->hands[$smallerHand] = Array();
         }
+        */
     }
 
     /**
