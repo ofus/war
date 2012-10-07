@@ -9,6 +9,9 @@ class War
     /** @var Array */
     protected $hands;
 
+    /** @var int */
+    protected $turn;
+
     /** @var Deck */
     protected $deck;
 
@@ -19,8 +22,8 @@ class War
     {
         $this->deck = new Deck();
         $this->winner = -1;
+        $this->turn = 0;
         $this->hands = array_chunk( $this->deck->getCards(), 26 ); // total cards / number of players = 26
-        return $this;
     }
 
     /**
@@ -44,8 +47,22 @@ class War
         return ( empty($this->hands[0]) || empty($this->hands[1]) );
     }
 
+    public function getTurn()
+    {
+        return $this->turn;
+    }
+
+    public function getWinner()
+    {
+        if ($this->winner == -1) {
+            return "tie";
+        }
+        return "Player " . $this->winner;
+    }
+
     public function draw( &$pot = NULL )
     {
+        $this->turn++;
         if ( is_null($pot) ) {
             $pot = Array();
         }
@@ -86,14 +103,15 @@ class War
      * Print hand to std output
      * @param array $cards
      */
-    public static function displayHand(Array $cards)
+    public function displayHand($player)
     {
         $str = implode(" ", array_map(
                 function ($cardValue) {
                     $values = Array(0 => "deuce", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "jack", "queen", "king", "ace");
                     return $values[$cardValue];
                 },
-                $cards )
+                $this->hands[$player]
+            )
         );
 
         return $str;

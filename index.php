@@ -16,6 +16,8 @@
  */
 
 require_once('Deck.php');
+require_once('War.php');
+
 ?><pre>
 /**
     Code Challenges:
@@ -34,7 +36,18 @@ require_once('Deck.php');
  */
 
 <?php
-$deck = new Deck();
+
+$game = new War();
+while ( !$game->isGameOver() ) {
+    $game->draw();
+    echo "Turn #" . $game->getTurn() . PHP_EOL;
+    echo "\tPlayer 0 current cards:\t" . $game->displayHand(0) . PHP_EOL;
+    echo "\tPlayer 1 current cards:\t" . $game->displayHand(1) . PHP_EOL;
+}
+echo "Winner: " . $game->getWinner() . PHP_EOL;
+echo "Game over on turn #" . $game->getTurn() . PHP_EOL;
+
+/*$deck = new Deck();
 
 $hands = $deck->deal();
 $winner = NULL;
@@ -45,3 +58,4 @@ for ($i = 0; count($hands[0]) > 0 && count($hands[1]) > 0; $i++) {
 }
 echo "Player $winner WINS!\n";
 
+*/
