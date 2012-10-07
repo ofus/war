@@ -106,6 +106,7 @@ class War
             $tmp = $this->hands[$roundWinner];
             $this->hands[$roundWinner] = array_merge( $tmp, $pot );
         } else {    // tie, draw again
+            $this->log[$this->getTurn()] = "Players tie with " . $this->cardToString($card0) . "s and draw again.";
             $this->draw( $pot );
         }
         return;
