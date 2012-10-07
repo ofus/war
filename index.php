@@ -24,10 +24,11 @@ require_once('War.php');
 
 $game = new War();
 while ( !$game->isGameOver() ) {
-    echo "Turn #" . $game->getTurn() . PHP_EOL;
-    echo "\tPlayer 0 current cards (" . $game->getScore(0) . "):\t" . $game->displayHand(0, TRUE) . PHP_EOL;
-    echo "\tPlayer 1 current cards (" . $game->getScore(1) . "):\t" . $game->displayHand(1, TRUE) . PHP_EOL;
-    echo "Log: " . $game->getLog( $game->getTurn() ) . "\n";
+    $turnNumber = $game->getTurn();
+    echo "Turn #$turnNumber\n";
+    echo "\tPlayer 0 current cards (" . $game->getScore(0) . ")\t:" . $game->displayHand(0, TRUE) . PHP_EOL;
+    echo "\tPlayer 1 current cards (" . $game->getScore(1) . ")\t:" . $game->displayHand(1, TRUE) . PHP_EOL;
+    echo $game->getLog( $turnNumber ) . "\n";
     $game->draw();
 }
 echo "Winner: " . $game->getWinner() . PHP_EOL;

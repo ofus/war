@@ -9,6 +9,8 @@ class War
     /** @var Array */
     protected $hands;
 
+    protected $pot = Array();
+
     /** @var String[] */
     protected $log;
 
@@ -56,21 +58,17 @@ class War
         return $this->turn;
     }
 
-    public function getLog( $turn = NULL )
+    public function getLog( $turnNumber = NULL )
     {
-        if ( is_null( $turn ) ) {
+        if ( is_null( $turnNumber ) ) {
             return $this->log;
         }
-        return $this->log[$turn];
+        return $this->log[$turnNumber];
     }
 
     public function log($msg)
     {
-        if ( $this->log[$this->turn] != '' ) {
-            throw new Exception('should not be a log here yet');
-        }
-        $this->log[$this->turn] = $msg;
-        return $this;
+        $this->log[$this->turn] .= $msg;
     }
 
     public function getScore($player)
@@ -93,39 +91,48 @@ class War
         return "Player " . $this->winner;
     }
 
+    protected function newTurn()
+    {
+        $this->turn++;
+        $this->log[$this->turn] = '';
+    }
+
     /**
      * Draw another card for each player
-     * @param array $pot (used in recursion)
      */
-    public function draw( Array $pot = NULL )
+    public function draw()
     {
         if( $this->isGameOver() ) {
             return;
         }
-        if ( is_null($pot) ) {
-            $pot = Array();
-        }
-        $this->turn++;
+        $this->newTurn();
+        $c0 = $this->hands[0][(count($this->hands[0]) - 1)];
+        $c1 = $this->hands[1][(count($this->hands[1]) - 1)];
         $card0 = array_pop( $this->hands[0] );
         $card1 = array_pop( $this->hands[1] );
+        if ($c0 != $card0 || $c1 != $card1) {
+            throw new Exception( 'picking the wrong card for some reason ');
+        }
 
-        array_push( $pot, $card0, $card1 );
+        $this->log(
+              "Player 0 plays " . self::cardToString( $card0 )
+            ." Player 1 plays " . self::cardToString( $card1 )
+            . PHP_EOL
+        );
+        array_push( $this->pot, $card0, $card1 );
         if ($card0 != $card1) {
             $roundWinner = ($card0 > $card1) ? 0 : 1;
-            $potstr = $this->cardToString($pot);
-            $this->log[$this->turn] = "Player $roundWinner plays "
-                . $this->cardToString($card0)
-                . " against "
-                . $this->cardToString($card1)
-                . " to win the pot: " . $potstr
-            ;
+            $potstr = $this->cardToString($this->pot);
+            $this->log( "Player $roundWinner wins the pot and receives: " . $potstr );
             $tmp = $this->hands[$roundWinner];
-            $this->hands[$roundWinner] = array_merge( $tmp, $pot );
+
+            $this->hands[$roundWinner] = array_merge( $tmp, $this->pot );
+
+
+            $this->pot = Array();
         } else {    // tie, draw again
-            $this->log[$this->turn] = "Players tie with " . $this->cardToString($card0) . "s and draw again.";
-            $this->draw( $pot );
+            $this->log( "Players tie with " . $this->cardToString($card0) . "s and draw again." );
         }
-        return;
     }
 
     /**
@@ -135,6 +142,23 @@ class War
     public function displayHand($player, $compact = FALSE)
     {
         $values = self::getValues( $compact );
+        $str = '';
+        foreach ( $this->hands[$player] as $cardValue ) {
+            $str .= $values[$cardValue] . ' ';
+        }
+        return rtrim( $str );
+
+        $hand = $this->hands[$player];
+        array_walk(
+            $hand,
+            function ($cardValue) use ($values) {
+                return $values[$cardValue];
+            }
+        );
+        $str = implode( " ", $hand );
+
+        return $str;
+
         $str = implode(" ",
             array_map(
                 function ($cardValue) use ($values) {
@@ -149,13 +173,13 @@ class War
 
     public function cardToString($value)
     {
-        $values = self::getValues();
+        $values = self::getValues( TRUE );
         if (is_array($value)) {
             $str = '';
             foreach($value as $v) {
-                $str .= $values[$v];
+                $str .= $values[$v] . ' ';
             }
-            return $str;
+            return rtrim($str);
         }
         return $values[$value];
     }
