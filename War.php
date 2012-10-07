@@ -68,7 +68,7 @@ class War
     public function draw( Array $pot = NULL )
     {
         if( $this->isGameOver() ) {
-            return FALSE;
+            return;
         }
         if ( is_null($pot) ) {
             $pot = Array();
@@ -86,23 +86,7 @@ class War
         } else {    // tie, draw again
             $this->draw( $pot );
         }
-
-        /*
-        // which hand is bigger
-        //$biggerHand = ( count($this->hands[0]) >= count($this->hands[1]) ) ? $this->hands[0] : $this->hands[1];
-        $biggerHand = 0;
-        $smallerHand = 1;
-        if ( count($this->hands[0]) > count($this->hands[1]) ) {
-            $biggerHand = 1;
-            $smallerHand = 0;
-        }
-        // check if all remaining cards in smaller hand will tie with larger hand, if true larger hand holder wins
-        $largerHandCardsInPlay = array_slice( $this->hands[$biggerHand], count($this->hands[$smallerHand]) );
-        if ( $largerHandCardsInPlay == $this->hands[$smallerHand] ) {
-            $this->hands[$biggerHand] = array_merge( $this->hands[$biggerHand], $this->hands[$smallerHand] );
-            $this->hands[$smallerHand] = Array();
-        }
-        */
+        return;
     }
 
     /**
@@ -116,11 +100,14 @@ class War
         } else {
             $values = Array(0 => "deuce", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "jack", "queen", "king", "ace");
         }
-        $str = implode(" ", array_map(
-                function ($cardValue) use ($values) {
-                    return $values[$cardValue];
-                },
-                $this->hands[$player]
+        $str = implode(" ",
+            array_reverse(
+                array_map(
+                    function ($cardValue) use ($values) {
+                        return $values[$cardValue];
+                    },
+                    $this->hands[$player]
+                )
             )
         );
 
