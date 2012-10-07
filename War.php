@@ -9,6 +9,9 @@ class War
     /** @var Array */
     protected $hands;
 
+    /** @var String[] */
+    public $log;
+
     /** @var int */
     protected $turn;
 
@@ -82,6 +85,11 @@ class War
         array_push( $pot, $card0, $card1 );
         if ($card0 != $card1) {
             $roundWinner = ($card0 > $card1) ? 0 : 1;
+            $cardsSorted = Array($card0, $card1);
+            sort($cardsSorted);
+            $this->log[] = "Player $roundWinner plays " . $cardsSorted[0] . " against " . $cardsSorted[1]
+                . " to win the pot: " . implode(',', $pot)
+            ;
             $this->hands[$roundWinner] = array_merge($this->hands[$roundWinner], $pot);
         } else {    // tie, draw again
             $this->draw( $pot );
