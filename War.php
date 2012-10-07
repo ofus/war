@@ -103,11 +103,15 @@ class War
      * Print hand to std output
      * @param array $cards
      */
-    public function displayHand($player)
+    public function displayHand($player, $compact = FALSE)
     {
+        if ($compact) {
+            $values = Array(0 => "2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A");
+        } else {
+            $values = Array(0 => "deuce", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "jack", "queen", "king", "ace");
+        }
         $str = implode(" ", array_map(
-                function ($cardValue) {
-                    $values = Array(0 => "deuce", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "jack", "queen", "king", "ace");
+                function ($cardValue) use ($values) {
                     return $values[$cardValue];
                 },
                 $this->hands[$player]
