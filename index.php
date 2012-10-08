@@ -1,16 +1,17 @@
 <?php
+/**
+ * Author: Andrew Joseph
+ */
 
 require_once('Deck.php');
 require_once('War.php');
 
 ?>
-
-
 <!DOCTYPE html>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
-    <title>war</title>
+    <title>War</title>
 </head>
 <body>
 <pre>
@@ -41,14 +42,6 @@ require_once('War.php');
 $game = new War();
 while ( $game->doRound() ) {
     echo $game->getLog();
-    //sleep(1);
-
-    //$turnNumber = $game->getTurn();
-    //echo "Turn #$turnNumber\n";
-    /*
-    echo "\tPlayer 0 score(" . $game->getScore(0) . ")\tcurrent cards " . $game->displayHand(0, TRUE) . PHP_EOL;
-    echo "\tPlayer 1 score(" . $game->getScore(1) . ")\tcurrent cards " . $game->displayHand(1, TRUE) . PHP_EOL;
-    */
 }
 echo "Winner: " . $game->getWinner() . PHP_EOL;
 echo "Game over on turn #" . $game->getTurn() . PHP_EOL;

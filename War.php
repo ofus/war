@@ -1,15 +1,11 @@
 <?php
 /**
  * Author: Andrew Joseph
- * Date: 10/6/12
- * Time: 8:37 PM
  */
 class War
 {
     /** @var Array */
     protected $hands;
-
-    protected $pot = Array();
 
     /** @var String[] */
     protected $log;
@@ -49,16 +45,28 @@ class War
         }
         return $leader;
     }
+
+    /**
+     * @return bool TRUE when game is over
+     */
     public function isGameOver()
     {
         return ( empty( $this->hands[0] ) || empty( $this->hands[1] ) );
     }
 
+    /**
+     * Get the current turn #
+     * @return int
+     */
     public function getTurn()
     {
         return $this->turn;
     }
 
+    /**
+     * Fetch logs and purge
+     * @return String[]
+     */
     public function getLog(  )
     {
         $tmp = $this->log;
@@ -66,17 +74,26 @@ class War
         return $tmp;
     }
 
+    /**
+     * Queue a log entry to be displayed
+     * @param string $msg
+     */
     public function log($msg)
     {
         $this->log .= "#{$this->turn} SCORE: P0=" . $this->getScore( 0 ) . ", P1=" . $this->getScore( 1 ) . ")\t$msg \n";
     }
 
+    /**
+     * @param int $player
+     * @return int player's score
+     */
     public function getScore($player)
     {
         return count( $this->hands[$player] );
     }
 
     /**
+     * Fetch the winning player if game is over
      * @return string or false if game not over
      */
     public function getWinner()
@@ -92,7 +109,8 @@ class War
     }
 
     /**
-     * Draw another card for each player
+     * Execute the next round
+     * @return bool true if game is not yet over
      */
     public function doRound()
     {
@@ -102,38 +120,20 @@ class War
         $this->turn++;
         $card0 = $this->draw( 0 );
         $card1 = $this->draw( 1 );
-        /*
-        $card0 = $this->hands[0][(count($this->hands[0]) - 1)];
-        $card1 = $this->hands[1][(count($this->hands[1]) - 1)];
-        unset( $this->hands[0][(count($this->hands[0]) - 1)] );
-        unset( $this->hands[1][(count($this->hands[1]) - 1)] );
-
-        //array_push( $this->pot, $card0, $card1 );
-        //$this->pot[] = $card0;
-        //$this->pot[] = $card1;
-
-        $this->log(
-              "Player 0 plays " . self::cardToString( $card0 )
-            ." Player 1 plays " . self::cardToString( $card1 )
-            . PHP_EOL
-        );
-         */
 
         $this->log( "Draw: (P0)" . self::cardToString( $card0  ) . " (P1)" . self::cardToString( $card1 ) );
 
         if ( $card0 == $card1 ) { // if card values are a tie, there is a war
             $this->log( "WAR! with " . $this->cardToString($card0) . "s and draw again." );
-            // WAR STUFF HERE
             $pot = Array( $card0, $card1 );
 
             for( $i = 0; $this->isGameOver() == FALSE; $i++ ) {
-
                 $card0 = $this->draw( 0 );
                 $card1 = $this->draw( 1 );
                 array_push( $pot, $card0, $card1 );
 
                 if ( ( $i % 2 == 0 ) ) {
-                    continue;
+                    continue;   // rules specify that one of the cards removed will not be used to determine round winner
                 }
 
                 $logmsg = "Draw: (P0)" . self::cardToString( $card0  ) . " (P1)" . self::cardToString( $card1 );
@@ -160,20 +160,21 @@ class War
         return TRUE;
     }
 
+    /**
+     * Draw a card out of a player's hand
+     * @param int $player
+     * @return int card
+     */
     protected function draw( $player )
     {
         return array_pop( $this->hands[$player]  );
     }
-        /*
-        $potstr = $this->cardToString($this->pot);
-        $this->log( "Player $roundWinner wins the pot and receives: " . $potstr );
 
-        foreach ($this->pot as $card) {
-            array_unshift($this->hands[$roundWinner], $card);
-        }
-        $this->pot = Array();
-        */
-
+    /**
+     * Add cards to the beginning of a player's hand
+     * @param int   $player
+     * @param array $cards
+     */
     protected function addCards( $player, Array $cards )
     {
         foreach ($cards as $card) {
@@ -182,21 +183,10 @@ class War
     }
 
     /**
-     * Print hand to std output
-     * @param array $cards
+     * Determine and convert a card's value as a string
+     * @param int $value
+     * @return string
      */
-    public function displayHand($player, $compact = FALSE)
-    {
-        $values = self::getValues( $compact );
-        $str = '';
-        $nextPosition = count( $this->hands[$player] ) - 1;
-        $str .= '(next:' . $this->cardToString( $this->hands[$player][$nextPosition] ) . ') ';
-        foreach ( $this->hands[$player] as $k => $cardValue ) {
-            $str .= "[$k]" . $values[$cardValue] . ' ';
-        }
-        return rtrim( $str );
-    }
-
     public function cardToString($value)
     {
         $values = self::getValues( TRUE );
@@ -210,6 +200,11 @@ class War
         return $values[$value];
     }
 
+    /** Get the values used for converting internally stored card value to displayed value format
+     * note: a deuce or a "2" is stored as a 0 internally, a "3" as a 1, etc
+     * @param bool $compact
+     * @return array card output values
+     */
     public static function getValues($compact = FALSE){
         if ( $compact == TRUE ) {
             return Array(0 => "2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A");
@@ -218,3 +213,4 @@ class War
     }
 
 }
+
