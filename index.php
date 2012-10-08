@@ -31,11 +31,12 @@ require_once('War.php');
  */
 </pre>
 
-    <h2>Codexorz</h2>
+    <h1>Codexorz</h1>
     <a href="index.php.html">index.php</a><br />
     <a href="Deck.php.html">Deck.php</a><br />
     <a href="War.php.html">War.php</a><br />
 
+    <h1>Output</h1>
 <pre>
 <?php
 
