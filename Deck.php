@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * Author: Andrew Joseph
+ */
 class Deck
 {
     /** @var Array  */
