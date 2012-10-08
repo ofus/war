@@ -19,9 +19,7 @@ require_once('War.php');
 
     WAR:
     Design a class definition for a deck of playing cards, then write a simple program to simulate two
-    players playing the game of War. The game and rules are described here: http://www.pagat.com/war/
-
-    war.html
+    players playing the game of War. The game and rules are described here: <a href="http://www.pagat.com/war/war.html">http://www.pagat.com/war/war.html</a>
 
     The program should:
     * Shuffle the virtual deck before every game
