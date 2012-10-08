@@ -19,6 +19,10 @@ require_once('War.php');
     * Display the cards that were played for each turn, who was the winner, and the running score.
 
  */
+    <h3>Codexorz</h3>
+    <a href="index.php.html">index.php</a><br />
+    <a href="Deck.php.html">Deck.php</a><br />
+    <a href="War.php.html">War.php</a><br />
 
 <?php
 
