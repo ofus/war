@@ -3,7 +3,17 @@
 require_once('Deck.php');
 require_once('War.php');
 
-?><pre>
+?>
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+    <title>war</title>
+</head>
+<body>
+<pre>
 /**
     Code Challenges:
 
@@ -19,11 +29,14 @@ require_once('War.php');
     * Display the cards that were played for each turn, who was the winner, and the running score.
 
  */
-    <h3>Codexorz</h3>
+</pre>
+
+    <h2>Codexorz</h2>
     <a href="index.php.html">index.php</a><br />
     <a href="Deck.php.html">Deck.php</a><br />
     <a href="War.php.html">War.php</a><br />
 
+<pre>
 <?php
 
 $game = new War();
@@ -40,3 +53,8 @@ while ( $game->doRound() ) {
 }
 echo "Winner: " . $game->getWinner() . PHP_EOL;
 echo "Game over on turn #" . $game->getTurn() . PHP_EOL;
+
+?>
+</pre>
+</body>
+</html>
