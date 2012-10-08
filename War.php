@@ -68,7 +68,7 @@ class War
 
     public function log($msg)
     {
-        $this->log .= "[T={$this->turn}] $msg \n";
+        $this->log .= "#{$this->turn} SCORE: P0=" . $this->getScore( 0 ) . ", P1=" . $this->getScore( 1 ) . ")\t$msg \n";
     }
 
     public function getScore($player)
@@ -91,49 +91,94 @@ class War
         return "Player " . $this->winner;
     }
 
-    protected function newTurn()
-    {
-        $this->turn++;
-        //$this->log[$this->turn] = '';
-    }
-
     /**
      * Draw another card for each player
      */
-    public function draw()
+    public function doRound()
     {
         if( $this->isGameOver() ) {
             return FALSE;
         }
-        $this->newTurn();
+        $this->turn++;
+        $card0 = $this->draw( 0 );
+        $card1 = $this->draw( 1 );
+        /*
         $card0 = $this->hands[0][(count($this->hands[0]) - 1)];
         $card1 = $this->hands[1][(count($this->hands[1]) - 1)];
         unset( $this->hands[0][(count($this->hands[0]) - 1)] );
         unset( $this->hands[1][(count($this->hands[1]) - 1)] );
+
+        //array_push( $this->pot, $card0, $card1 );
+        //$this->pot[] = $card0;
+        //$this->pot[] = $card1;
 
         $this->log(
               "Player 0 plays " . self::cardToString( $card0 )
             ." Player 1 plays " . self::cardToString( $card1 )
             . PHP_EOL
         );
-        //array_push( $this->pot, $card0, $card1 );
-        $this->pot[] = $card0;
-        $this->pot[] = $card1;
-        if ($card0 != $card1) {
-            $roundWinner = ($card0 > $card1) ? 0 : 1;
-            $potstr = $this->cardToString($this->pot);
-            $this->log( "Player $roundWinner wins the pot and receives: " . $potstr );
+         */
 
-            foreach ($this->pot as $card) {
-                array_unshift($this->hands[$roundWinner], $card);
+        $this->log( "Draw: (P0)" . self::cardToString( $card0  ) . " (P1)" . self::cardToString( $card1 ) );
+
+        if ( $card0 == $card1 ) { // if card values are a tie, there is a war
+            $this->log( "WAR! with " . $this->cardToString($card0) . "s and draw again." );
+            // WAR STUFF HERE
+            $pot = Array( $card0, $card1 );
+
+            for( $i = 0; $this->isGameOver() == FALSE; $i++ ) {
+
+                $card0 = $this->draw( 0 );
+                $card1 = $this->draw( 1 );
+                array_push( $pot, $card0, $card1 );
+
+                if ( ( $i % 2 == 0 ) ) {
+                    continue;
+                }
+
+                $logmsg = "Draw: (P0)" . self::cardToString( $card0  ) . " (P1)" . self::cardToString( $card1 );
+
+                if ( ( $card0 == $card1 ) ) {
+                    $this->log( $logmsg . " Tie. WAR CONTINUES!" );
+                    continue; // continue if tie or for every other card draw
+                }
+
+                // round won, game continues
+                $winner = ($card0 > $card1) ? 0 : 1;
+                $this->addCards( $winner, $pot );
+                $this->log( $logmsg . " Player $winner wins round and takes the pot." );
+                return TRUE;
             }
-            $this->pot = Array();
+            $this->log( "a player has run out of cards and can't continue... game over!" );
+            return FALSE;
 
-        } else {    // tie, draw again
-            $this->log( "Players tie with " . $this->cardToString($card0) . "s and draw again." );
-
+        } else { // no war
+            $winner = ($card0 > $card1) ? 0 : 1;
+            $this->addCards( $winner, Array( $card0, $card1 ) );
+            $this->log( "Player $winner wins round and collects both cards." );
         }
         return TRUE;
+    }
+
+    protected function draw( $player )
+    {
+        return array_pop( $this->hands[$player]  );
+    }
+        /*
+        $potstr = $this->cardToString($this->pot);
+        $this->log( "Player $roundWinner wins the pot and receives: " . $potstr );
+
+        foreach ($this->pot as $card) {
+            array_unshift($this->hands[$roundWinner], $card);
+        }
+        $this->pot = Array();
+        */
+
+    protected function addCards( $player, Array $cards )
+    {
+        foreach ($cards as $card) {
+            array_unshift( $this->hands[$player], $card );
+        }
     }
 
     /**
